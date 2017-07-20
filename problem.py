@@ -4,6 +4,10 @@ import json
 import image
 import mayi_utils
 
+json_path = os.getcwd() + '\\json\\'
+if not os.path.exists(json_path):
+    os.mkdir(json_path)
+
 class Problem:
     base_url = "http://zujuan.21cnjy.com/question/detail/"
     def __init__(self, question_id, category):
@@ -19,6 +23,16 @@ class Problem:
 
         self.valid = True
 
+    def get_question(self, json_obj):
+        if 'list' in json_obj:
+            question_collect = json_obj['list']
+            for question in question_collect:
+                self.question += question['question_text']
+                self.answer += question['answer']
+        else:
+            self.question = json_obj['question-text']
+            self.answer = json_obj['answer']
+        self.explanation = json_obj['explanation']
 
     def download_problem(self):
         text = mayi_utils.download(self.base_url+str(self.question_id))
@@ -36,12 +50,11 @@ class Problem:
             return
 
         question_json = text[beg_location: end_location].strip(' \n\t;')
+
         question_json = json.loads(question_json)
 
         question_json[0]['point'] = self.category
-        self.answer = question_json[0]['questions'][0]['answer']
-        self.question = question_json[0]['questions'][0]['question_text']
-        self.explanation = question_json[0]['questions'][0]['explanation']
+        self.get_question(question_json[0]['questions'][0])
 
         if self.answer == '':
             return

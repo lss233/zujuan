@@ -3,7 +3,8 @@ import hashlib
 import time
 import requests
 import json
-
+import urllib
+import os
 
 # 找群主购买 my_app_key, myappsecret, 以及蚂蚁代理服务器的 mayi_url 地址和 mayi_port 端口
 my_app_key = "76854064"
@@ -44,7 +45,8 @@ def find_end(text, beg):
 
 def download(url, params=None, cookies=None):
     finished = False
-    count = 0
+    no_answer_count = 0
+    timeout_count = 0
     while not finished:
         try:
             print("Downloading: ", url)
@@ -53,15 +55,27 @@ def download(url, params=None, cookies=None):
             start = find_beg(text)
             end = find_end(text, start)
 
+            '''
+            json_file = open(os.getcwd() + '\\json\\' + url.split('/')[-1] + '.json', 'w', encoding='utf-8')
+            json_file.write(str(text[start: end]))
+            json_file.close()
+            '''
+
             json_obj = json.loads(text[start: end].strip('\t\n; '))
+
             if json_obj[0]['questions'][0]['answer'] == '':
-                count += 1
-                if count == 5:
-                    finished = True
-                continue
-        except:
-            count += 1
-            if count == 5:
+                if 'list' in json_obj[0]['questions'][0]:
+                    pass
+                else:
+                    print("No answer")
+                    no_answer_count += 1
+                    if no_answer_count == 5:
+                        finished = True
+                    continue
+        except Exception as e:
+            print(e)
+            timeout_count += 1
+            if timeout_count == 5:
                 finished = True
             continue
         return pg

@@ -32,7 +32,7 @@ def get_page_num(problem_num):
 
 def main():
     find_target = False
-    target = "并集及其运算"
+    target = "极差、方差与标准差"
 
     rfile = open('merge_point.txt', 'r')
     point_json = json.loads(rfile.read())
