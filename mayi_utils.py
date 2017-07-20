@@ -44,7 +44,8 @@ def find_end(text, beg):
 
 def download(url, params=None, cookies=None):
     finished = False
-    count = 0
+    timeout_count = 0
+    no_answer_count = 0
     while not finished:
         try:
             print("Downloading: ", url)
@@ -55,13 +56,15 @@ def download(url, params=None, cookies=None):
 
             json_obj = json.loads(text[start: end].strip('\t\n; '))
             if json_obj[0]['questions'][0]['answer'] == '':
-                count += 1
-                if count == 5:
+                print("doesn't get the answer")
+                no_answer_count += 1
+                if no_answer_count== 10:
                     finished = True
                 continue
-        except:
-            count += 1
-            if count == 5:
+        except Exception as e:
+            print(e)
+            timeout_count += 1
+            if timeout_count == 5:
                 finished = True
             continue
         return pg
