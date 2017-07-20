@@ -20,7 +20,7 @@ def get_new_cookie():
     after_cookie = after_cookie.cookies
     rebuilt_cookie['xd'] = after_cookie['xd']
 
-    return rebuilt_cookie
+    return rebuilt_cookie 	 
 
 def get_page_num(problem_num):
     lower_limit = problem_num // 10
@@ -33,14 +33,17 @@ def get_page_num(problem_num):
 def main():
     find_target = False
     target = "极差、方差与标准差"
+    find_page = False
+    target_page = 1
 
     rfile = open('merge_point.txt', 'r')
     point_json = json.loads(rfile.read())
     rfile.close();
-
+ 
     for sub_part in point_json:
         category = sub_part[len(sub_part) - 1]['point']
         for point in sub_part:
+            wfile = open('page_count.txt', 'w')
             if 'point' in point:
                 continue
 
@@ -73,6 +76,12 @@ def main():
             page_num = get_page_num(question_num)
             count = 0
             for x in range(1, page_num + 1):
+                if not find_page:
+                    if x == target_page:
+                        find_page = True
+                    else:
+                        continue
+                wfile.write(str(x)+'\n')
                 count += 1
 
                 params['page'] = x
@@ -93,6 +102,7 @@ def main():
                 if count == 5:
                     count = 0
                     cookie = get_new_cookie()
+            wfile.close()
 
 if __name__ == "__main__":
     main()

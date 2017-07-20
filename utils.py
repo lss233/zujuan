@@ -3,7 +3,7 @@ import requests
 def download(url, num_retries=3, params=None, headers={'user-agent': 'Mozilla/5.0'}, cookies=None, proxy=None):
     try:
         if proxy == None:
-            r = requests.get(url, params=params, headers=headers, cookies=cookies, timeout=4)
+            r = requests.get(url, params=params, headers=headers, cookies=cookies, timeout=8)
         else:
             proxies = {'http': proxy}
             r = requests.get(url, params=params, headers=headers, cookies=cookies, proxies=proxies)

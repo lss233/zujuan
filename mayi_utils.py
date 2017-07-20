@@ -45,8 +45,8 @@ def find_end(text, beg):
 
 def download(url, params=None, cookies=None):
     finished = False
-    no_answer_count = 0
     timeout_count = 0
+    no_answer_count = 0
     while not finished:
         try:
             print("Downloading: ", url)

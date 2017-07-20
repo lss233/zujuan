@@ -1,14 +1,14 @@
 import utils
 import re
 import os
+import mayi_utils
 
 def download_img(url, num_retries=3, params=None, headers={'user-agent': 'Mozilla/5.0'}, cookies=None, proxy=None):
-    r = utils.download(url, num_retries, params, headers, cookies=cookies, proxy=proxy)
+    r = utils.download(url, num_retries, params, headers=headers, cookies=cookies, proxy=proxy)
     if r == None:
         return None
 
     return r.content
-
 
 def get_img_tags(text, img_count):
     img_collect = re.findall(r'<img.*?/?>', text)
@@ -41,13 +41,15 @@ def get_img_src(img_tag):
     if beg_pos == None or end_pos == None:
         return None
     else:
-        return img_tag[beg_pos+1: end_pos]
+        return img_tag[beg_pos+1: end_pos].strip(' \n\t;')
 
 def download_all_img(id, img_count, img_path):
     count = 1
     for img in img_count:
         src = get_img_src(img)
 
+        if not src.startswith('http'):
+            return False
         if src == None:
             return False
 
