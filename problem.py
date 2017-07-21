@@ -10,7 +10,7 @@ if not os.path.exists(json_path):
 
 class Problem:
     base_url = "http://zujuan.21cnjy.com/question/detail/"
-    def __init__(self, question_id, category):
+    def __init__(self, question_id, category, cookies):
         self.question = ""
         self.answer = ""
         self.explanation = ""
@@ -18,6 +18,7 @@ class Problem:
         self.question_path = os.getcwd() + "\\question\\"
         self.img_path = os.getcwd() + "\\img\\"
 
+        self.cookies = cookies
         self.question_id = question_id
         self.category = category
 
@@ -35,7 +36,7 @@ class Problem:
         self.explanation = json_obj['explanation']
 
     def download_problem(self):
-        text = mayi_utils.download(self.base_url+str(self.question_id))
+        text = mayi_utils.download(self.base_url+str(self.question_id), cookies=self.cookies)
         if text == None:
             return
         text = text.text

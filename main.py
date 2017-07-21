@@ -96,7 +96,7 @@ def main():
                     continue
                 
                 for question_id in question_ids:
-                    problem = Problem(question_id, question_category)
+                    problem = Problem(question_id, question_category, cookie)
                     problem.download_problem()
 
                 if count == 5:
