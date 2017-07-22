@@ -2,7 +2,7 @@ import json
 import os
 
 if __name__ == "__main__":
-	rfile = open('question\\3240676.txt', 'r')
+	rfile = open('question\\2535937.txt', 'r')
 	text = rfile.read()
 	
 	json_obj = json.loads(text)

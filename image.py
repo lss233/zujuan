@@ -3,6 +3,8 @@ import re
 import os
 import mayi_utils
 
+import threading
+
 def download_img(url, num_retries=3, params=None, headers={'user-agent': 'Mozilla/5.0'}, cookies=None, proxy=None):
     r = utils.download(url, num_retries, params, headers=headers, cookies=cookies, proxy=proxy)
     if r == None:
@@ -43,24 +45,59 @@ def get_img_src(img_tag):
     else:
         return img_tag[beg_pos+1: end_pos].strip(' \n\t;')
 
-def download_all_img(id, img_count, img_path):
-    count = 1
-    for img in img_count:
+        
+def download_single_image(img, filename):
+
+    global ALL_IMAGE_SUCCESS
+    
+    try:
         src = get_img_src(img)
-
+        
         if not src.startswith('http'):
-            return False
+            raise AssertionError
         if src == None:
-            return False
+            raise AssertionError
 
-        value = download_img(src)
+        for i in range(0, 5):
+            value = download_img(src)
+            if value is not None:
+                break
+            
         if value == None:
-            return False
+            raise AssertionError
 
-        with open(img_path + str(id) + '_' + str(count) + '.png', 'wb') as wfile:
+        with open(filename, 'wb') as wfile:
             wfile.write(value)
-            count += 1
+            
+    except AssertionError:
+        print("Failed download:" + src)
+        ALL_IMAGE_SUCCESS = False
+        
+def download_all_img(id, img_count, img_path):
 
+    global ALL_IMAGE_SUCCESS
+    ALL_IMAGE_SUCCESS = True
+
+    count = 1
+    
+    thread_list = []
+    
+    for img in img_count:
+    
+        filename = img_path + str(id) + '_' + str(count) + '.png'
+        count += 1
+        
+        t = threading.Thread(target=download_single_image,args=(img, filename, ))
+        t.start()
+        thread_list.append(t)
+        
+    for t in thread_list:
+        t.join()
+    
+    if not ALL_IMAGE_SUCCESS:
+        print('Problem '+str(id)+'failed: cannot download all images.')
+        return False
+    
     return True
 
 def make_img_dir(img_path):

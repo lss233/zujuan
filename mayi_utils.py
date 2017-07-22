@@ -18,23 +18,27 @@ mayi_proxy = {'http': 'http://{}:{}'.format(mayi_url, mayi_port)}
 # 准备去爬的 URL 链接
 url = 'http://zujuan.21cnjy.com/question/detail/4119613'
 
-# 计算签名
-timesp = '{}'.format(time.strftime("%Y-%m-%d %H:%M:%S"))
-codes = app_secret + 'app_key' + my_app_key + 'timeout5000' + 'timestamp' + timesp + app_secret
-sign = hashlib.md5(codes.encode('utf-8')).hexdigest().upper()
-
-# 拼接一个用来获得蚂蚁代理服务器的「准入」的 header (Python 的 concatenate '+' 比 join 效率高)
-authHeader = 'MYH-AUTH-MD5 sign=' + sign + '&app_key=' + my_app_key + '&timeout=5000' + '&timestamp=' + timesp 
-
-# 用 Python 的 Requests 模块。先订立 Session()，再更新 headers 和 proxies 
-headers = {'Proxy-Authorization': authHeader, 'user-agent': 'Mozilla/5.0'}
-proxies = {'http': mayi_proxy, 'https': mayi_proxy}
+proxies = mayi_proxy
 
 '''
 s = requests.Session()
 s.headers.update({'Proxy-Authorization': authHeader, 'user-agent': 'Mozilla/5.0'})
 s.proxies.update(mayi_proxy)
 '''
+
+def get_current_header():
+    # 计算签名
+    timesp = '{}'.format(time.strftime("%Y-%m-%d %H:%M:%S"))
+    codes = app_secret + 'app_key' + my_app_key + 'timeout5000' + 'timestamp' + timesp + app_secret
+    sign = hashlib.md5(codes.encode('utf-8')).hexdigest().upper()
+
+    # 拼接一个用来获得蚂蚁代理服务器的「准入」的 header (Python 的 concatenate '+' 比 join 效率高)
+    authHeader = 'MYH-AUTH-MD5 sign=' + sign + '&app_key=' + my_app_key + '&timeout=5000' + '&timestamp=' + timesp 
+
+    # 用 Python 的 Requests 模块。先订立 Session()，再更新 headers 和 proxies 
+    headers = {'Proxy-Authorization': authHeader, 'user-agent': 'Mozilla/5.0'}
+    
+    return headers
 
 def find_beg(text):
     beg = text.find('MockDataTestPaper')
@@ -55,7 +59,7 @@ def download(url, params=None, cookies=None):
     while not finished:
         try:
             print("Downloading: ", url)
-            pg = requests.get(url, headers=headers, proxies=proxies, timeout=60, params=params, cookies=cookies)  # tuple: 300 代表 connect timeout, 270 代表 read timeout
+            pg = requests.get(url, headers=get_current_header(), proxies=proxies, params=params, cookies=cookies, timeout=60)  # tuple: 300 代表 connect timeout, 270 代表 read timeout
             text = pg.text
             start = find_beg(text)
             end = find_end(text, start)

@@ -31,7 +31,7 @@ class Problem:
                 self.question += question['question_text']
                 self.answer += question['answer']
         else:
-            self.question = json_obj['question-text']
+            self.question = json_obj['question_text']
             self.answer = json_obj['answer']
         self.explanation = json_obj['explanation']
 
