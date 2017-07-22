@@ -26,6 +26,7 @@ class Problem:
 
     def get_question(self, json_obj):
         if 'list' in json_obj:
+            self.question = json_obj['question_text']
             question_collect = json_obj['list']
             for question in question_collect:
                 self.question += question['question_text']

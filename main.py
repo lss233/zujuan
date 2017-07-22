@@ -80,7 +80,7 @@ def main():
 
             params = {
                 'knowledges': point['id'],
-                'question_channel_type': 6,
+                'question_channel_type': 28,
                 'sortField': 'time',
                 'page': 1
             }
